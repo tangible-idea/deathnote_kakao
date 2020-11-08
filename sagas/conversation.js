@@ -16,7 +16,7 @@ const tag = "sagas/conversation: "
 function parsingGroupConversation(data) {
     let parsingResult;
 
-    console.log(data);
+    console.log(tag, "parsingGroupConversation",data);
     return 'parsingResult';
 }
 
@@ -26,6 +26,7 @@ function parsingGroupConversation(data) {
  * Parsing 결과를 Response 받고 DATA_READ_DONE에 전달한다.
  */
 function conversationDataReadAPI(data) {
+    console.log(tag, "conversationDataReadAPI",data);
     return parsingGroupConversation(data);     // 서버로 request 보낼 경우엔 axios를 사용한다 => return axios.post('/conversation/readGroupData', data);
 }
 

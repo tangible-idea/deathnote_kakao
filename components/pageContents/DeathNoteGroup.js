@@ -28,7 +28,9 @@ const data = [
     },
 ];
 
-const DeathNoteGroup = () => {
+const DeathNoteGroup = ({parsedData}) => {
+
+    console.log("DeathNoteGroup:",parsedData);
 
     const [tableState, setTableState] = useState({
         filteredInfo: null,
