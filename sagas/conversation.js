@@ -16,6 +16,7 @@ const tag = "sagas/conversation: "
 function parsingGroupConversation(data) {
     let parsingResult;
 
+    console.log(data);
     return 'parsingResult';
 }
 
@@ -59,6 +60,7 @@ function* reading(action) {
  * request에서 DATA_READ_REQUEST 사용이 감지되면 바로 위에 reading 메소드 실행
  */
 function* watchReadingRequest() {
+    console.log("watchReadingRequest");
     yield takeLatest(DATA_READ_REQUEST, reading);
 }
 
