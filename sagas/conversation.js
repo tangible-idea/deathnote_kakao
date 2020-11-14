@@ -81,7 +81,8 @@ function parsingGroupConversation(data) {
                 splitedLine= lines[i].split(',');
             }
             else{   // PC용 카카오톡
-
+                alert("현재는 MAC용 데이터만 지원. PC버전 개발중.");
+                return;
             }
             
             if(splitedLine.length >= 3)
@@ -180,7 +181,6 @@ function* watchReadingRequest() {
     console.log("watchReadingRequest");
     yield takeLatest(DATA_READ_REQUEST, reading);
 }
-
 
 /**
  * DATA_READ_REQUEST가 언제 사용될지 항상 지켜보기
