@@ -30,7 +30,7 @@ const AppLayout = ({ children }) => {
     return (
         <>
             <Header style={ StyleHeader }>
-                <Title level={ 1 }>Kakao Death Note</Title>
+                <Title level={ 1 }>숙청숙청</Title>
             </Header>
 
             <Content style={ StyleContent }>

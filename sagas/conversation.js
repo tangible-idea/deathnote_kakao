@@ -16,7 +16,38 @@ const tag = "sagas/conversation: "
 function parsingGroupConversation(data) {
     let parsingResult;
 
-    console.log(tag, "parsingGroupConversation",data);
+    console.log(data.file);
+    console.log(data.file.name);
+    let ext= "unknown"
+
+    if(data.file.name.endsWith(".csv")){
+        alert("This is a csv file.");
+        ext= "csv"
+    }
+    else if(data.file.name.endsWith(".txt")){
+        alert("This is a txt file.");
+        ext= "txt"
+    }
+
+    var reader = new FileReader();
+    reader.onload = function () {
+        //console.log(reader.result);
+        parsingResult= reader.result;
+        //console.log(output.innerText);
+        // By lines
+        var lines = this.result.split('\n');
+        for(var i = 0; i < lines.length; i++){
+            console.log(lines[i]);
+            
+        }
+    };
+    reader.readAsText(data.file, /* optional */ "euc-kr");
+
+    //data.days: 일수
+    //data.file: 파일내용인데 이걸 읽어서 txt로 반환.
+    // 테이블에서 볼 수 있도록 json으로 변환.
+    
+    // 리턴 텍스트데이터
     return 'parsingResult';
 }
 
