@@ -9,6 +9,17 @@ import {
 
 const tag = "sagas/conversation: "
 
+class MyUser {
+    bubblecount= 0;
+    textcount= 0;
+    firstchat= 0;
+    latestchat= 0;
+    constructor(name) {
+      this.name = name;
+    }
+  }
+
+
 /**
  * 1. 카카오톡 대화내용 분석 Parsing 요청을 전달 받는다.
  * 2. Parsing 된 데이터를 전달한다.
@@ -29,6 +40,11 @@ function parsingGroupConversation(data) {
         ext= "txt"
     }
 
+    // 분석 Map 데이터
+    let users = new Map();
+    var recent_user;
+    var recent_username;
+
     var reader = new FileReader();
     reader.onload = function () {
         //console.log(reader.result);
@@ -37,8 +53,51 @@ function parsingGroupConversation(data) {
         // By lines
         var lines = this.result.split('\n');
         for(var i = 0; i < lines.length; i++){
-            console.log(lines[i]);
+            //console.log(lines[i]);
+            var splitedLine= '';
+            if(ext === 'csv') // 맥용 카카오톡
+            {
+                splitedLine= lines[i].split(',');
+            }
+            else{   // PC용 카카오톡
+
+            }
             
+            if(splitedLine.length >= 3)
+            {
+                var thisname= splitedLine[1];
+                recent_username= thisname;
+                // 이미 있는 이름의 경우 데이터 갱신.
+                if(users.has(thisname))
+                {
+                    var currData= users.get(thisname);
+                    console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
+                    ++currData.bubblecount;
+                    currData.textcount += splitedLine[2].length;
+                    users.set(thisname, currData);
+                    recent_user= currData;  // 마지막 유저
+                }
+                else
+                {// map에 데이터 없으면 새로 만든다.
+                    const thisuser= new MyUser(thisname);
+                    ++thisuser.bubblecount;
+                    thisuser.textcount += splitedLine[2].length;
+                    users.set(thisname, thisuser);
+                    console.log("new user: " + thisname +", added to: " + thisuser.bubblecount);
+                    recent_user= thisuser;  // 마지막 유저
+                }
+                //
+
+                //console.log(users);
+            }
+            else{
+                currData= users.get(recent_username)
+                currData.textcount += splitedLine[0].length;
+                console.log("connected line, new text lines: "+ splitedLine[0].length +", " + recent_username +"'s total texts count is now: " + currData.textcount);
+                users.set(thisname, currData);
+                
+            }
+
         }
     };
     reader.readAsText(data.file, /* optional */ "euc-kr");
