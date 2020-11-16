@@ -26,7 +26,7 @@ class MyUser {      // 유저 모델 클래스
         //var msDate = Date.UTC(a.getFullYear(), a.getMonth()+1, a.getDate());
         this.firstchat = date;
     }
-    setLateDateAsLatestChat(date1, date2){
+    setLateDateAsLatestChat(date1, date2, maxDate){
         var a = new Date(date1);
         var b = new Date(date2);
         var msDateA = Date.UTC(a.getFullYear(), a.getMonth()+1, a.getDate());
@@ -40,6 +40,8 @@ class MyUser {      // 유저 모델 클래스
             this.latestchat= a; // gt
         else
             return null;  // error
+
+        calcTargetToBeLayOff(this.latestchat, maxDate);
     }
     calcTargetToBeLayOff(date, maxDate){
         var target = new Date(date1);
@@ -48,6 +50,8 @@ class MyUser {      // 유저 모델 클래스
         var subtracted= today - target;
         console.log("subtracted: "+subtracted.getDate()+"days gap.");
         this.subtracted_date= ubtracted.getDate()
+        if(this.subtracted_date > maxDate)  // 설정한 날보다 더 많은 일수동안 대화가 없었으면 숙청대상.
+            this.target = true;
     }
   }
 
@@ -107,7 +111,7 @@ function parsingGroupConversation(data) {
                     console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
                     ++currData.bubblecount;
                     currData.textcount += splitedLine[2].length;
-                    currData.setLateDateAsLatestChat(currData.latestchat, splitedLine[0]);
+                    currData.setLateDateAsLatestChat(currData.latestchat, splitedLine[0], data.days);
                     users.set(thisname, currData);
                     recent_user= currData;  // 마지막 유저
                 }
