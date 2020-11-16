@@ -41,15 +41,14 @@ class MyUser {      // 유저 모델 클래스
         else
             return null;  // error
 
-        calcTargetToBeLayOff(this.latestchat, maxDate);
+        this.calcTargetToBeLayOff(this.latestchat, maxDate);
     }
     calcTargetToBeLayOff(date, maxDate){
-        var target = new Date(date1);
-        var today= new Date();
+        var target = new Date(date);
 
-        var subtracted= today - target;
-        console.log("subtracted: "+subtracted.getDate()+"days gap.");
-        this.subtracted_date= ubtracted.getDate()
+        var subtracted= Math.abs(new Date()-target);
+        console.log("subtracted: "+subtracted.getDay()+"days gap.");
+        this.subtracted_date= ubtracted.getDay()
         if(this.subtracted_date > maxDate)  // 설정한 날보다 더 많은 일수동안 대화가 없었으면 숙청대상.
             this.target = true;
     }
