@@ -9,13 +9,16 @@ import {
 
 const tag = "sagas/conversation: "
 
-class MyUser {
-    bubblecount= 0;
-    textcount= 0;
-    firstchat= new Date();
-    latestchat= new Date();
+class MyUser {      // 유저 모델 클래스
+    bubblecount= 0; // 채팅카운트
+    textcount= 0;   // 총 글자수
+    firstchat= new Date();  // 첫번째 채팅
+    latestchat= new Date(); // 마지막 채팅
+    subtracted_date= 0; // 오늘날짜 - 마지막 채팅.
+    target= false;  // 마지막 채팅이 유저가 설저한 데이터보다 적은지.
+
     constructor(name) {
-      this.name = name;
+      this.name = name; // 이름(id)
     }
 
     setFirstChat(date) {
@@ -37,6 +40,14 @@ class MyUser {
             this.latestchat= a; // gt
         else
             return null;  // error
+    }
+    calcTargetToBeLayOff(date, maxDate){
+        var target = new Date(date1);
+        var today= new Date();
+
+        var subtracted= today - target;
+        console.log("subtracted: "+subtracted.getDate()+"days gap.");
+        this.subtracted_date= ubtracted.getDate()
     }
   }
 
