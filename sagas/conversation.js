@@ -21,11 +21,14 @@ class MyUser {      // 유저 모델 클래스
       this.name = name; // 이름(id)
     }
 
+    // 첫 대화를 설정한다.
     setFirstChat(date) {
         var date= new Date(date);
         //var msDate = Date.UTC(a.getFullYear(), a.getMonth()+1, a.getDate());
         this.firstchat = date;
     }
+
+    // 마지막 대화날짜를 설정한다.
     setLateDateAsLatestChat(date1, date2, maxDate){
         var a = new Date(date1);
         var b = new Date(date2);
@@ -43,12 +46,17 @@ class MyUser {      // 유저 모델 클래스
 
         this.calcTargetToBeLayOff(this.latestchat, maxDate);
     }
+
+    // 마지막대화가 현재로부터 얼마나 지났는지 계산하고, 숙청대상인지 확인한다.
     calcTargetToBeLayOff(date, maxDate){
         var target = new Date(date);
+        var today = new Date();
+        var subtracted= target.getTime() - today.getTime();
+        this.subtracted_date= Math.abs(Math.floor(subtracted / (1000*60*60*24)));
 
-        var subtracted= Math.abs(new Date()-target);
-        console.log("subtracted: "+subtracted.getDay()+"days gap.");
-        this.subtracted_date= ubtracted.getDay()
+        //var subtracted= new Date(new Date()-target);
+        //console.log("subtracted: "+subtracted+"days gap.");
+        //this.subtracted_date= subtracted.getDay()
         if(this.subtracted_date > maxDate)  // 설정한 날보다 더 많은 일수동안 대화가 없었으면 숙청대상.
             this.target = true;
     }
