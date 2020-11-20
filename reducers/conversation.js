@@ -37,7 +37,7 @@ const reducer = (state = initialState, action) => produce(state, (draft) => {
 
             // 완료 메시지 출력하기
             message.success("대화내용 분석 완료",6);
-            draft.conversationParsingResult= action.data
+            draft.conversationParsingResult= action.data;
             break;
 
         case DATA_READ_ERROR:
