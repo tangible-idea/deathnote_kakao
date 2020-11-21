@@ -145,7 +145,12 @@ function parsingGroupConversation(data) {
                 }
             }
 
-            const obj = Object.fromEntries(users);
+            //const obj = Object.fromEntries(users);
+            //const obj = Object.fromEntries(users);
+            //const obj= JSON.stringify(users);
+            //const obj= JSON.stringify(Array.from(users.entries()));
+            
+            var obj= [...users.values()]
             console.log(obj);
             parsingResult= obj;
             console.log("return parsingResult");

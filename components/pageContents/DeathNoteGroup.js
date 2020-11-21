@@ -30,6 +30,7 @@ const data = [
 
 const DeathNoteGroup = ({parsedData}) => {
 
+    console.log("DeathNoteGroup:",typeof parsedData);
     console.log("DeathNoteGroup:",parsedData);
 
     const [tableState, setTableState] = useState({
@@ -76,11 +77,11 @@ const DeathNoteGroup = ({parsedData}) => {
     const columns = [
         {
             title: '아이디',
-            dataIndex: 'id',
-            key: 'id',
+            dataIndex: 'name',
+            key: 'name',
             filteredValue: filteredInfo.name || null,
             sorter: (a, b) => a.name.length - b.name.length,
-            sortOrder: sortedInfo.columnKey === 'id' && sortedInfo.order,
+            sortOrder: sortedInfo.columnKey === 'name' && sortedInfo.order,
             ellipsis: true,
         },
         {
@@ -143,7 +144,7 @@ const DeathNoteGroup = ({parsedData}) => {
                 rowClassName={() => 'editable-row'}
                 pagination={false}
                 columns={columns}
-                dataSource={data}
+                dataSource={parsedData}
                 onChange={handleChange}
             />
         </>
