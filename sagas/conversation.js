@@ -12,10 +12,12 @@ const tag = "sagas/conversation: "
 class MyUser {      // 유저 모델 클래스
     bubblecount= 0; // 채팅카운트
     textcount= 0;   // 총 글자수
-    firstchat= new Date();  // 첫번째 채팅
-    latestchat= new Date(); // 마지막 채팅
+    firstchat= "";
+    latestchat= "";
+    firstchat_date= new Date();  // 첫번째 채팅
+    latestchat_date= new Date(); // 마지막 채팅
     subtracted_date= 0; // 오늘날짜 - 마지막 채팅.
-    target= false;  // 마지막 채팅이 유저가 설저한 데이터보다 적은지.
+    target= "false";  // 마지막 채팅이 유저가 설저한 데이터보다 적은지.
 
     constructor(name) {
       this.name = name; // 이름(id)
@@ -25,7 +27,8 @@ class MyUser {      // 유저 모델 클래스
     setFirstChat(date) {
         var date= new Date(date);
         //var msDate = Date.UTC(a.getFullYear(), a.getMonth()+1, a.getDate());
-        this.firstchat = date;
+        this.firstchat_date = date;
+        this.firstchat = this.firstchat_date.toDateString();
     }
 
     // 마지막 대화날짜를 설정한다.
@@ -36,29 +39,35 @@ class MyUser {      // 유저 모델 클래스
         var msDateB = Date.UTC(b.getFullYear(), b.getMonth()+1, b.getDate());
 
         if (parseFloat(msDateA) < parseFloat(msDateB))
-            this.latestchat= b; // lt
+            this.latestchat_date= b; // lt
         else if (parseFloat(msDateA) == parseFloat(msDateB))
-            this.latestchat= b;  // eq
+            this.latestchat_date= b;  // eq
         else if (parseFloat(msDateA) > parseFloat(msDateB))
-            this.latestchat= a; // gt
+            this.latestchat_date= a; // gt
         else
             return null;  // error
 
-        this.calcTargetToBeLayOff(this.latestchat, maxDate);
+        this.calcTargetToBeLayOff(this.latestchat_date, maxDate);
     }
 
     // 마지막대화가 현재로부터 얼마나 지났는지 계산하고, 숙청대상인지 확인한다.
-    calcTargetToBeLayOff(date, maxDate){
-        var target = new Date(date);
+    calcTargetToBeLayOff(date, maxDate) {
         var today = new Date();
-        var subtracted= target.getTime() - today.getTime();
+        var subtracted= date.getTime() - today.getTime();
         this.subtracted_date= Math.abs(Math.floor(subtracted / (1000*60*60*24)));
+
+        this.latestchat = date.toDateString();
+        
 
         //var subtracted= new Date(new Date()-target);
         //console.log("subtracted: "+subtracted+"days gap.");
         //this.subtracted_date= subtracted.getDay()
         if(this.subtracted_date > maxDate)  // 설정한 날보다 더 많은 일수동안 대화가 없었으면 숙청대상.
-            this.target = true;
+            this.target = "숙청대상";
+        else
+        {
+            this.target= "숙청 " + Math.abs(maxDate - this.subtracted_date) + " 일 전";
+        }
     }
   }
 
@@ -132,8 +141,13 @@ function parsingGroupConversation(data) {
                         thisuser.textcount += splitedLine[2].length;
                         thisuser.setFirstChat(splitedLine[0]);
                         thisuser.latestchat= splitedLine[0];
+                        //var date_validation= thisuser.setLateDateAsLatestChat(splitedLine[0],splitedLine[0], data.days);
                         users.set(thisname, thisuser);
-                        console.log("new user: " + thisname +", added to: " + thisuser.bubblecount);
+                        console.log("new user: " + thisname +", len: " +splitedLine.length);
+
+                        // if(date_validation != null)
+                        // {
+                        // }
                         recent_user= thisuser;  // 마지막 유저
                     }
                 }
@@ -150,7 +164,7 @@ function parsingGroupConversation(data) {
             //const obj= JSON.stringify(users);
             //const obj= JSON.stringify(Array.from(users.entries()));
             
-            var obj= [...users.values()]
+            var obj= [...users.values()]         
             console.log(obj);
             parsingResult= obj;
             console.log("return parsingResult");
