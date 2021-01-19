@@ -84,11 +84,11 @@ function parsingGroupConversation(data) {
     let ext= "unknown"
 
     if(data.file.name.endsWith(".csv")){
-        alert("This is a csv file.");
+        //alert("This is a csv file.");
         ext= "csv"
     }
     else if(data.file.name.endsWith(".txt")){
-        alert("This is a txt file.");
+        //alert("This is a txt file.");
         ext= "txt"
     }
 
@@ -119,15 +119,17 @@ function parsingGroupConversation(data) {
                     return;
                 }
                 
-                if(splitedLine.length >= 3)
+                if(splitedLine.length >= 3) 
                 {
                     var thisname= splitedLine[1];
+                    if(!thisname.includes('"'))
+                        continue;
                     recent_username= thisname;
                     // 이미 있는 이름의 경우 데이터 갱신.
                     if(users.has(thisname))
                     {
                         var currData= users.get(thisname);
-                        console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
+                        //console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
                         ++currData.bubblecount;
                         currData.textcount += splitedLine[2].length;
                         currData.setLateDateAsLatestChat(currData.latestchat, splitedLine[0], data.days);
@@ -164,7 +166,23 @@ function parsingGroupConversation(data) {
             //const obj= JSON.stringify(users);
             //const obj= JSON.stringify(Array.from(users.entries()));
             
-            var obj= [...users.values()]         
+            // for (var prop in users) {
+            //     if (obj.hasOwnProperty(prop) && prop[0] == letter){
+            //         delete obj[prop];
+            //     }
+            // }
+
+            // Object.keys(users).map(function(target, value) {
+            //     if(users[key].target === false) {
+            //         delete users[key];
+            //     }
+            //   });
+
+            // Object.keys(users).forEach(function (target) {
+            //     if(target === false) delete users[target];
+            //    });
+
+            var obj= [...users.values()]
             console.log(obj);
             parsingResult= obj;
             console.log("return parsingResult");
