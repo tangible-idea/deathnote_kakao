@@ -93,7 +93,7 @@ function parsingGroupConversation(data) {
         //alert("This is a txt file.");
         ext= "txt"
         var result = parsingGroupConversationWindow(data);
-        console.log("window result:",result);
+        console.log(".txt conversation parsing result:",result);
         // return window parsing result
         return result;
     }
