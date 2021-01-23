@@ -94,8 +94,7 @@ function parsingGroupConversation(data) {
         ext= "txt"
         var result = parsingGroupConversationWindow(data);
         console.log("window result:",result);
-
-        // return result;
+        return result;
     }
 
     if (ext === "csv") {
