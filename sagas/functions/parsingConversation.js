@@ -21,7 +21,12 @@ export function parsingGroupConversationWindow(data)
 
             for (let i = 0; i < lines.length; i++)
             {
+                var today;
 
+                var splitResult = lines[i].split(/\s\[\d{2}:\d{2}\]\s/);
+                if (i < 10) {
+                    console.log(splitResult)
+                }
             }
 
             /** return promise result */
