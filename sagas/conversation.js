@@ -126,6 +126,7 @@ function parsingGroupConversation(data) {
                         continue;
                     recent_username= thisname;
                     // 이미 있는 이름의 경우 데이터 갱신.
+                    
                     if(users.has(thisname))
                     {
                         var currData= users.get(thisname);
@@ -157,8 +158,9 @@ function parsingGroupConversation(data) {
                     currData= users.get(recent_username)
                     currData.textcount += splitedLine[0].length;
                     console.log("connected line, new text lines: "+ splitedLine[0].length +", " + recent_username +"'s total texts count is now: " + currData.textcount);
-                    users.set(thisname, currData);
+                    users.set(recent_username, currData);
                 }
+                console.log("users.size: " + users.size)
             }
 
             //const obj = Object.fromEntries(users);
@@ -182,6 +184,7 @@ function parsingGroupConversation(data) {
             //     if(target === false) delete users[target];
             //    });
 
+            console.log("ends up: ");
             var obj= [...users.values()]
             console.log(obj);
             parsingResult= obj;
