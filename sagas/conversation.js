@@ -59,7 +59,7 @@ class MyUser {      // 유저 모델 클래스
         this.subtracted_date= Math.abs(Math.floor(subtracted / (1000*60*60*24)));
 
         this.latestchat = date.toDateString();
-        
+
 
         //var subtracted= new Date(new Date()-target);
         //console.log("subtracted: "+subtracted+"days gap.");
@@ -94,6 +94,7 @@ function parsingGroupConversation(data) {
         ext= "txt"
         var result = parsingGroupConversationWindow(data);
         console.log("window result:",result);
+        // return window parsing result
         return result;
     }
 
@@ -240,7 +241,7 @@ function* reading(action) {
         // 요청 전 데이터
         console.log(tag,"reading: action:",action);
         const result = yield call(conversationDataReadAPI, action.data);
-        
+
         // 응답 후 데이터
         console.log(tag,"reading: result:",result);
         yield put({
