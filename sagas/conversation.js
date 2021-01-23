@@ -6,6 +6,8 @@ import {
     DATA_READ_DONE,
     DATA_READ_ERROR,
 } from '../reducers/conversation';
+import { parsingGroupConversationWindow } from "./functions/parsingConversation";
+import { message } from "antd";
 
 const tag = "sagas/conversation: "
 
@@ -90,125 +92,131 @@ function parsingGroupConversation(data) {
     else if(data.file.name.endsWith(".txt")){
         //alert("This is a txt file.");
         ext= "txt"
+        var result = parsingGroupConversationWindow(data);
+        console.log("window result:",result);
+
+        // return result;
     }
 
-    // Promise 리턴하여 대기하도록한다.
-    return new Promise((resolve, reject) => {
+    if (ext === "csv") {
+        // Promise 리턴하여 대기하도록한다.
+        return new Promise((resolve, reject) => {
 
-        // 분석 Map 데이터
-        let users = new Map();
-        var recent_user;
-        var recent_username;
+            // 분석 Map 데이터
+            let users = new Map();
+            var recent_user;
+            var recent_username;
 
-        var reader = new FileReader();
-        reader.onload = function () {
-            //console.log(reader.result);
-            parsingResult= reader.result;
-            //console.log(output.innerText);
-            // By lines
-            var lines = this.result.split('\n');
-            for(var i = 0; i < lines.length; i++){
-                //console.log(lines[i]);
-                var splitedLine= '';
-                if(ext === 'csv') // 맥용 카카오톡
-                {
-                    splitedLine= lines[i].split(',');
-                }
-                else{   // PC용 카카오톡
-                    alert("현재는 MAC용 데이터만 지원. PC버전 개발중.");
-                    return;
-                }
-                
-                if(splitedLine.length >= 3) 
-                {
-                    var thisname= splitedLine[1];
-                    if(!thisname.includes('"'))
-                        continue;
-                    recent_username= thisname;
-                    // 이미 있는 이름의 경우 데이터 갱신.
-                    
-                    if(users.has(thisname))
+            var reader = new FileReader();
+            reader.onload = function () {
+                //console.log(reader.result);
+                parsingResult= reader.result;
+                //console.log(output.innerText);
+                // By lines
+                var lines = this.result.split('\n');
+                for(var i = 0; i < lines.length; i++){
+                    //console.log(lines[i]);
+                    var splitedLine= '';
+                    if(ext === 'csv') // 맥용 카카오톡
                     {
-                        var currData= users.get(thisname);
-                        //console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
-                        ++currData.bubblecount;
-                        currData.textcount += splitedLine[2].length;
-                        currData.setLateDateAsLatestChat(currData.latestchat, splitedLine[0], data.days);
-                        users.set(thisname, currData);
-                        recent_user= currData;  // 마지막 유저
+                        splitedLine= lines[i].split(',');
                     }
-                    else
-                    {// map에 데이터 없으면 새로 만든다.
-                        const thisuser= new MyUser(thisname);
-                        ++thisuser.bubblecount;
-                        thisuser.textcount += splitedLine[2].length;
-                        thisuser.setFirstChat(splitedLine[0]);
-                        thisuser.latestchat= splitedLine[0];
-                        //var date_validation= thisuser.setLateDateAsLatestChat(splitedLine[0],splitedLine[0], data.days);
-                        users.set(thisname, thisuser);
-                        console.log("new user: " + thisname +", len: " +splitedLine.length);
-
-                        // if(date_validation != null)
-                        // {
-                        // }
-                        recent_user= thisuser;  // 마지막 유저
+                    else{   // PC용 카카오톡
+                        // alert("현재는 MAC용 데이터만 지원. PC버전 개발중.");
+                        return;
                     }
+
+                    if(splitedLine.length >= 3)
+                    {
+                        var thisname= splitedLine[1];
+                        if(!thisname.includes('"'))
+                            continue;
+                        recent_username= thisname;
+                        // 이미 있는 이름의 경우 데이터 갱신.
+
+                        if(users.has(thisname))
+                        {
+                            var currData= users.get(thisname);
+                            //console.log("old user: "+ thisname+", added to: " + currData.bubblecount);
+                            ++currData.bubblecount;
+                            currData.textcount += splitedLine[2].length;
+                            currData.setLateDateAsLatestChat(currData.latestchat, splitedLine[0], data.days);
+                            users.set(thisname, currData);
+                            recent_user= currData;  // 마지막 유저
+                        }
+                        else
+                        {// map에 데이터 없으면 새로 만든다.
+                            const thisuser= new MyUser(thisname);
+                            ++thisuser.bubblecount;
+                            thisuser.textcount += splitedLine[2].length;
+                            thisuser.setFirstChat(splitedLine[0]);
+                            thisuser.latestchat= splitedLine[0];
+                            //var date_validation= thisuser.setLateDateAsLatestChat(splitedLine[0],splitedLine[0], data.days);
+                            users.set(thisname, thisuser);
+                            console.log("new user: " + thisname +", len: " +splitedLine.length);
+
+                            // if(date_validation != null)
+                            // {
+                            // }
+                            recent_user= thisuser;  // 마지막 유저
+                        }
+                    }
+                    else{
+                        currData= users.get(recent_username)
+                        currData.textcount += splitedLine[0].length;
+                        console.log("connected line, new text lines: "+ splitedLine[0].length +", " + recent_username +"'s total texts count is now: " + currData.textcount);
+                        users.set(recent_username, currData);
+                    }
+                    console.log("users.size: " + users.size)
                 }
-                else{
-                    currData= users.get(recent_username)
-                    currData.textcount += splitedLine[0].length;
-                    console.log("connected line, new text lines: "+ splitedLine[0].length +", " + recent_username +"'s total texts count is now: " + currData.textcount);
-                    users.set(recent_username, currData);
-                }
-                console.log("users.size: " + users.size)
-            }
 
-            //const obj = Object.fromEntries(users);
-            //const obj = Object.fromEntries(users);
-            //const obj= JSON.stringify(users);
-            //const obj= JSON.stringify(Array.from(users.entries()));
-            
-            // for (var prop in users) {
-            //     if (obj.hasOwnProperty(prop) && prop[0] == letter){
-            //         delete obj[prop];
-            //     }
-            // }
+                //const obj = Object.fromEntries(users);
+                //const obj = Object.fromEntries(users);
+                //const obj= JSON.stringify(users);
+                //const obj= JSON.stringify(Array.from(users.entries()));
 
-            // Object.keys(users).map(function(target, value) {
-            //     if(users[key].target === false) {
-            //         delete users[key];
-            //     }
-            //   });
+                // for (var prop in users) {
+                //     if (obj.hasOwnProperty(prop) && prop[0] == letter){
+                //         delete obj[prop];
+                //     }
+                // }
 
-            // Object.keys(users).forEach(function (target) {
-            //     if(target === false) delete users[target];
-            //    });
+                // Object.keys(users).map(function(target, value) {
+                //     if(users[key].target === false) {
+                //         delete users[key];
+                //     }
+                //   });
 
-            console.log("ends up: ");
-            var obj= [...users.values()]
-            console.log(obj);
-            parsingResult= obj;
-            console.log("return parsingResult");
-            resolve(parsingResult);
-        };
+                // Object.keys(users).forEach(function (target) {
+                //     if(target === false) delete users[target];
+                //    });
 
-        // 에러 핸들링..
-        reader.onerror = function(e) {
-            reject(e);
-        };
-        reader.readAsText(data.file, /* optional */ "euc-kr");
-        console.log("end of parsingGroupConversation");
-    });
+                console.log("ends up: ");
+                var obj= [...users.values()]
+                console.log(obj);
+                parsingResult= obj;
+                console.log("return parsingResult");
+                resolve(parsingResult);
+            };
 
-    
-    
+            // 에러 핸들링..
+            reader.onerror = function(e) {
+                reject(e);
+            };
+            reader.readAsText(data.file, /* optional */ "euc-kr");
+            console.log("end of parsingGroupConversation");
+        });
 
-    //data.days: 일수
-    //data.file: 파일내용인데 이걸 읽어서 txt로 반환.
-    // 테이블에서 볼 수 있도록 json으로 변환.
-    
-    // 리턴 텍스트데이터
-    //return parsingResult;
+
+
+
+        //data.days: 일수
+        //data.file: 파일내용인데 이걸 읽어서 txt로 반환.
+        // 테이블에서 볼 수 있도록 json으로 변환.
+
+        // 리턴 텍스트데이터
+        //return parsingResult;
+    }
 }
 
 
